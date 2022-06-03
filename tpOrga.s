@@ -35,7 +35,7 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
 
 a=cordenada cuerda en x
 b=cordenada cuerda en y
-if errores >=7: #7 es la cantidad de palitos formando el ahorcado
+if errores >=8: #8 es la cantidad de palitos formando el ahorcado
      print("Todavía podés salvarlo elije las cordenadas en x e y")
 	 x=int(input("Ingrese la primera coordenada en numero entero"))
 	 y=int(input("Ingrese la segunda coordenada en numero entero"))
