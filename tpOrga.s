@@ -24,7 +24,7 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
 	        contErr=0
 		    contAci++      ##controlo la cantidad de aciertos
 			rayasAdiv[i]=letraJgdor  #VER! NO ME ACUERDO DI ES ASÍ #para reemplazar el @ por la letra que adivino el jugador
-	     else:
+	 else:
 	        contErr++
 
     if contErr>=len(palabraAdiv):
