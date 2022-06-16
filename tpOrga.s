@@ -14,10 +14,12 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
  
  ###debe controlar los intentos, los aciertos y los errores. También debe actualizar el dibujo del ahorcado ante cada error del jugador.
   letraJgdor=input("Ingrese una letra en minuscula, por favor")  #¿cómo hago input en assembler? tiene q estar adentro de un for para que se repita  DUDA
+ vidas=3
  contErr=0
  contAci=0
  errores=0
- while contAci!=len(palabraAdiv):
+ 
+ while contAci!=len(palabraAdiv) and vidas>0:
     for i in range(0,len(palabraAdiv)):
          if letraJgdor==palabraAdiv[i]:
 	 	    mapa[i+n°]=letraJgdor     ##agregar letra en el mapa sería i + todas las posiciones hasta llegar al dibujo donde está la palabra a adivinar ## ¡?como se hace¡¡?? modos de direccionamiento??ej: ldr r2, [r3,r4]
@@ -26,13 +28,21 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
 			rayasAdiv[i]=letraJgdor  #VER! NO ME ACUERDO DI ES ASÍ #para reemplazar el @ por la letra que adivino el jugador
 	 else:
 	        contErr++
+	
 
     if contErr>=len(palabraAdiv):
         agregar palito en el mapa   ## ¡?como se hace¡¡?? modos de direccionamiento??ej: ldr r2, [r3,r4]
-	    errores++   #controlo la cantidad de errores
-		
-	letraJgdor=input("Ingrese otra letra en minuscula, por favor") 
+	errores++   #controlo la cantidad de errores
+	vidas--
+    
+    letraJgdor=input("Ingrese otra letra en minuscula, por favor") 
+if vidas==0:
+    print("Lo mataste!")
+else:
+     print("Lo salvaste!")
+    
 
+#tercera parte del juego: disparar a la cuerda para ver si acierta
 a=cordenada cuerda en x
 b=cordenada cuerda en y
 if errores >=8: #8 es la cantidad de palitos formando el ahorcado
@@ -42,5 +52,5 @@ if errores >=8: #8 es la cantidad de palitos formando el ahorcado
 	 if x==a and y==b:
 	     print("Lo salvaste!")
 	 else:
-	     print("ups!")
+	     print("Lo mataste!")
 	 
