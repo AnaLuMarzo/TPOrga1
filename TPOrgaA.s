@@ -1,12 +1,51 @@
  ###Primera parte: el programa debe elegir al azar la palabra a adivinar
 
+
 .data 
+/* Definicion de datos */
+
 palabra: .asciz "programa", "computadora", "pantalla", "codigo", "bucle"
+
+mapa: .asciz "@***\n"      @ \n enter
+longitud = . - mapa
+faltaAdiv: .asciz "\n Quedan letras por adivinar!\n"
+longitud2 = . - faltaAdiv
+
 #mensajes de la segunda parte del juego:
 address_of_message1 : .word message1
 address_of_scan_pattern : .word scan_pattern
 address_of_number_read : .word number_read
 address_of_return : .word return
+
+.text    @ Defincion de codigo del programa
+@ ------------ Código de la función
+imprimirString:
+      .fnstart
+      //Parametros inputs: 
+      //r1=puntero al string que queremos imprimir
+      //r2=longitud de lo que queremos imprimir
+      mov r7, #4 // Salida por pantalla  
+  mov r0, #1      // Indicamos a SWI que sera una cadena           
+   swi 0    // SWI, Software interrup
+      bx lr //salimos de la funcion mifuncion
+      .fnend
+.global main  @ global, visible en todo el programa
+main:
+ //llamamos a la subrutina para imprimir
+           ldr r1, =mapa  // Cargamos en r1 la direccion del mensaje
+           ldr r2, =longitud //Tamaño de la cadena 
+           bl  imprimirString         
+   
+           /*cambio el mapa, juego, llamo a otras partes del programa*/
+
+           //llamamos a la subrutina para imprimir
+           ldr r1, =despedida  // Cargamos en r1 la direccion del mensaje
+           ldr r2, =longitud2 //Tamaño de la cadena 
+           bl  imprimirString         
+         
+
+
+
 
 #2da parte, rta: 138:   https://thinkingeek.com/2013/02/02/arm-assembler-raspberry-pi-chapter-9/
     /* First message */
@@ -47,7 +86,11 @@ address_of_return : .word return
       ldr lr, [lr]                     /* lr ← *lr */
       bx lr                            /* return from main using lr */
   
+  
+      #falta pasarlo de cadena a entero https://www.youtube.com/watch?v=ZGphVbez5iw pasar de cadena a numero 
       .fnend
+      
+      
     /* External */
    .global printf
    .global scanf
@@ -56,7 +99,7 @@ address_of_return : .word return
 ##preguntar:
 elijoPalabra:
    .fnstart
-   
+     
    .fnend
 
 dibujoCantLetPalab:
@@ -114,4 +157,7 @@ if errores >=8: #8 es la cantidad de palitos formando el ahorcado
 	     print("Lo salvaste!")
 	 else:
 	     print("Lo mataste!")
-	 
+
+
+ mov r7, #1 // Salida al sistema
+ swi 0
