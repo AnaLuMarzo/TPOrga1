@@ -1,4 +1,6 @@
 ﻿ ###Primera parte: el programa debe elegir al azar la palabra a adivinar
+ ##https://www.youtube.com/watch?v=TWitXMmX06E   random
+ 
  #En python sería algo asi:
  lista = []   
  archivo= open("muchasPalabras.txt","r",encoding="utf8")   ## DUDA    lemario "muchasPalabras" queda guardado en la variable archivo
