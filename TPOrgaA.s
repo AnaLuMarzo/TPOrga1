@@ -2,16 +2,72 @@
 
 .data 
 palabra: .asciz "programa", "computadora", "pantalla", "codigo", "bucle"
+#mensajes de la segunda parte del juego:
+address_of_message1 : .word message1
+address_of_scan_pattern : .word scan_pattern
+address_of_number_read : .word number_read
+address_of_return : .word return
+
+#2da parte, rta: 138:   https://thinkingeek.com/2013/02/02/arm-assembler-raspberry-pi-chapter-9/
+    /* First message */
+   .balign 4
+   message1: .asciz "Para ganar otra vida, responda: entre 100 y 200 ¿Cuantos metros tiene la pirámide de Guiza?: "
+   /* Format pattern for scanf */
+   .balign 4
+   scan_pattern : .asciz "%d"
+
+   /* Where scanf will store the number read */
+   .balign 4
+   number_read: .word 0
+
+   .balign 4
+   return: .word 0
+
+   .text
+
+    ParteDos:
+      .fnstart
+      ldr r1, address_of_return        /* r1 ← &address_of_return */
+      str lr, [r1]                     /* *r1 ← lr */
+
+      ldr r0, address_of_message1      /* r0 ← &message1 */
+      bl printf                        /* call to printf */
+
+      ldr r0, address_of_scan_pattern  /* r0 ← &scan_pattern */
+      ldr r1, address_of_number_read   /* r1 ← &number_read */
+      bl scanf                         /* call to scanf */
+
+      ldr r1, [r1]                     /* r1 ← *r1 */
+      bl printf                        /* call to printf */
+
+      ldr r0, address_of_number_read   /* r0 ← &number_read */
+      ldr r0, [r0]                     /* r0 ← *r0 */
+
+      ldr lr, address_of_return        /* lr ← &address_of_return */
+      ldr lr, [lr]                     /* lr ← *lr */
+      bx lr                            /* return from main using lr */
+  
+      .fnend
+    /* External */
+   .global printf
+   .global scanf
+   
+##elegir numero al azar, hacer funcion no sè como
+##preguntar:
+elijoPalabra:
+   .fnstart
+   
+   .fnend
+
+dibujoCantLetPalab:
+   .fnstart
+   arrobasxLetras="@"*len(palabraAdiv)  ##dibujo x cantidad de rayitas segun la cantidad de letras de la palabra a adivinar
+ 
+   .fnend
 
  
-import random   #¿Cómo se elije un n° al azar en assembler? DUDA
- posicionPalAdiv = random.randrange(0,len(lista))  # Elijo una palabra al azar por su posición en "lista"# desde 0 hasta= len(lista)
- palabraAdiv = lista[posicionPalAdiv]   #elijo la palabra que se tiene que adivinar en el juego
-  
- rayasAdiv="@"*len(palabraAdiv)  ##dibujo x cantidad de rayitas segun la cantidad de letras de la palabra a adivinar
- 
  ###debe controlar los intentos, los aciertos y los errores. También debe actualizar el dibujo del ahorcado ante cada error del jugador.
-  letraJgdor=input("Ingrese una letra en minuscula, por favor")  #¿cómo hago input en assembler? tiene q estar adentro de un for para que se repita  DUDA
+  letraJgdor=input("Ingrese una letra en minuscula, por favor: ")  #¿cómo hago input en assembler? tiene q estar adentro de un for para que se repita  DUDA
  vidas=8
  contErr=0
  contAci=0
@@ -37,9 +93,7 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
 if contAci==len(palabraAdiv) and vidas>0:
     print("Lo salvaste!")
 elif contAci<len(palabraAdiv) and vidas==1:
-    #2da parte, rta: 138:
-    print("Responda la siguiente pregunta:")
-    respuesta=int(input("Entre 100 y 200 ¿Cuantos metros tiene la pirámide de Guiza?: "))
+   -->salto a la funcion ParteDos
     if respuesta<=140 and respuesta>=130:
          print(Ganaste una vida!)
 	 vida++
