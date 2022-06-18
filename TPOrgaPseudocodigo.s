@@ -41,6 +41,7 @@ if contAci==len(palabraAdiv) and vidas>0:
 elif contAci<len(palabraAdiv) and vidas==1:
     #2da parte, rta: 138:
     print("Responda la siguiente pregunta:")
+    ##https://www.youtube.com/watch?v=ZGphVbez5iw pasar de cadena a numero
     respuesta=int(input("Entre 100 y 200 ¿Cuantos metros tiene la pirámide de Guiza?: "))
     if respuesta<=140 and respuesta>=130:
          print(Ganaste una vida!)
