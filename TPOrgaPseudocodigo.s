@@ -1,5 +1,6 @@
 ﻿ ###Primera parte: el programa debe elegir al azar la palabra a adivinar
  ##https://www.youtube.com/watch?v=TWitXMmX06E   random
+ ##https://thinkingeek.com/2013/02/02/arm-assembler-raspberry-pi-chapter-9/
  
  #En python sería algo asi:
  lista = []   
