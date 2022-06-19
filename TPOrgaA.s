@@ -6,7 +6,27 @@
 
 palabra: .asciz "programa", "computadora", "pantalla", "codigo", "bucle"
 
-mapa: .asciz "@***\n"      @ \n enter
+mapa: .asciz "
+___________________________________________________|\n
+                                                   |\n
+     *** EL JUEGO DEL AHORCADO - ORGA 1 ***        |\n
+___________________________________________________|\n
+                                                   |\n
+                                                   |\n
+          +------------+                           |\n
+          |            |                           |\n
+          |            o                           |\n
+          |           /|\\                          |\n
+          |            |                           |\n
+          |           / \\                          |\n
+          |                                        |\n
+          |                                        |\n
+          |                                        |\n
+ +-------------------------------------------+     |\n
+ |                                           |     |\n
+ |    _ _ _ _ _ _ _ _ _ _ _ _ _ _            |     |\n
+ |                                           |     |\n
+ +-------------------------------------------+     |\n"      
 longitud = . - mapa
 faltaAdiv: .asciz "\n Quedan letras por adivinar!\n"
 longitud2 = . - faltaAdiv
