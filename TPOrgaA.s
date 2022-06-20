@@ -38,7 +38,7 @@ address_of_number_read : .word number_read
 address_of_return : .word return
 
 .text    @ Defincion de codigo del programa
-@ ------------ Código de la función
+@ ------------ Código de laS Subrutinas
 imprimirString:
       .fnstart
       //Parametros inputs: 
@@ -48,23 +48,7 @@ imprimirString:
   mov r0, #1      // Indicamos a SWI que sera una cadena           
    swi 0    // SWI, Software interrup
       bx lr //salimos de la funcion mifuncion
-      .fnend
-.global main  @ global, visible en todo el programa
-main:
- //llamamos a la subrutina para imprimir
-           ldr r1, =mapa  // Cargamos en r1 la direccion del mensaje
-           ldr r2, =longitud //Tamaño de la cadena 
-           bl  imprimirString         
-   
-           /*cambio el mapa, juego, llamo a otras partes del programa*/
-
-           //llamamos a la subrutina para imprimir
-           ldr r1, =despedida  // Cargamos en r1 la direccion del mensaje
-           ldr r2, =longitud2 //Tamaño de la cadena 
-           bl  imprimirString         
-         
-
-
+      .fnend     
 
 
 #2da parte, rta: 138:   https://thinkingeek.com/2013/02/02/arm-assembler-raspberry-pi-chapter-9/
@@ -128,6 +112,20 @@ dibujoCantLetPalab:
  
    .fnend
 
+/*PROGRAMA PRINCIPAL*/
+.global main  @ global, visible en todo el programa
+main:
+ //llamamos a la subrutina para imprimir  MAPA
+           ldr r1, =mapa  // Cargamos en r1 la direccion del mensaje
+           ldr r2, =longitud //Tamaño de la cadena 
+           bl  imprimirString         
+   
+           /*cambio el mapa, juego, llamo a otras partes del programa*/
+
+           //llamamos a la subrutina para imprimir faltaAdiv
+           ldr r1, =faltaAdiv  // Cargamos en r1 la direccion del mensaje
+           ldr r2, =longitud2 //Tamaño de la cadena 
+           bl  imprimirString       
  
  ###debe controlar los intentos, los aciertos y los errores. También debe actualizar el dibujo del ahorcado ante cada error del jugador.
   letraJgdor=input("Ingrese una letra en minuscula, por favor: ")  #¿cómo hago input en assembler? tiene q estar adentro de un for para que se repita  DUDA
