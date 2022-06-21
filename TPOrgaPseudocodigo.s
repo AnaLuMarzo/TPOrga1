@@ -13,7 +13,7 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
  posicionPalAdiv = random.randrange(0,len(lista))  # Elijo una palabra al azar por su posición en "lista"# desde 0 hasta= len(lista)
  palabraAdiv = lista[posicionPalAdiv]   #elijo la palabra que se tiene que adivinar en el juego
   
- rayasAdiv="@"*len(palabraAdiv)  ##dibujo x cantidad de rayitas segun la cantidad de letras de la palabra a adivinar
+ rayasAdiv="_"*len(palabraAdiv)  ##dibujo x cantidad de rayitas segun la cantidad de letras de la palabra a adivinar
  
  ###debe controlar los intentos, los aciertos y los errores. También debe actualizar el dibujo del ahorcado ante cada error del jugador.
   letraJgdor=input("Ingrese una letra en minuscula, por favor")  #¿cómo hago input en assembler? tiene q estar adentro de un for para que se repita  DUDA
@@ -28,7 +28,7 @@ import random   #¿Cómo se elije un n° al azar en assembler? DUDA
 	 	mapa[i+n°]=letraJgdor     ##agregar letra en el mapa sería i + todas las posiciones hasta llegar al dibujo donde está la palabra a adivinar ## ¡?como se hace¡¡?? modos de direccionamiento??ej: ldr r2, [r3,r4]
 	        contErr=0
 		contAci++      ##controlo la cantidad de aciertos
-		rayasAdiv[i]=letraJgdor  #VER! NO ME ACUERDO DI ES ASÍ #para reemplazar el @ por la letra que adivino el jugador
+		rayasAdiv[i]=letraJgdor  #Reemplazar el _ por la letra que adivino el jugador
 	 else:
 	        contErr++
 	
