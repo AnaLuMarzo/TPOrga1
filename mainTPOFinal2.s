@@ -13,7 +13,7 @@ reset_round:           // Se usa para imprimir el mensaje y reanudar la ronda.
         BL print
         B next_round
 
-win:   //para imprimir el mensaje de ganador y proponer al jugador que lo intente otra vez (pega el salto en try_again label)
+win:   //para imprimir el mensaje de ganador y proponer al jugador que lo intente otra vez (pega el salto en try_again)
         LDR R1, =win_msg
         BL print
         LDR R1, =word
@@ -22,7 +22,7 @@ win:   //para imprimir el mensaje de ganador y proponer al jugador que lo intent
         BL print
         B try_again
 
-promptchar:     //Se utiliza para obtener información del usuario. Input is then passed to input_valid, which checks its validity.
+promptchar:     //Se utiliza para obtener información del usuario. Luego, la entrada se pasa a input_valid, que verifica su validez.
         MOV R0, #0      //Configurar parámetros syscall para obtener la entrada de caracteres
         LDR R1, =char
         MOV R2, #20
@@ -32,10 +32,7 @@ promptchar:     //Se utiliza para obtener información del usuario. Input is the
 
 print_ASCII_art:   //R1: puntero al string para imprimirlo por pantalla, R4: numero de fallas aciertos, R5: puntero a la palabra.
         PUSH {LR}                                 // Se salva el registro link
-        LDR R1, =seperator
-        BL print
-        LDR R1, =top_part1
-        BL print
+ 
         LDR R1, =top_part2
         BL print
         LDR R1, =line_1
@@ -63,26 +60,34 @@ dead:           //Se va a imprimir los dibujos del ahorcado
         CMP R4, #5
         BLT nolegs               // SI < 5 errores, (4 errores) cambia R1 a una lineapara imprimir línea regular y pasar a impresión normal (sin piernas)
         LDREQ R1, =line_6_1leg    // SI = 5 errores, cambia R1 para imprimir una pierna
+        BL another_oport        //Sería la 2DA PARTE DEL JUEGO, darle la oportunidad de ganar una vida
+        
         LDRGT R1, =line_6_2legs    // SI > 5 errores, (6 errores) cambia R1 para imprimir 2 piernas
         BL print
         B endpr
 
+another_oport: //para imprimir la pregunta y proponer al jugador que lo intente otra vez (pega el salto en try_again)
+        LDR R1, =question
+        BL print
+
+        LDR R1, =newline
+        BL print
+        B try_again
+        
 normalprint:                   //salto para Imprimir sin el ahorcado
         LDR R1, =line_3
         BL print
         LDR R1, =wrong
         BL print
 
-ntorso: LDR R1, =line_4to5     //Salto aqui para NO imprimir el torso
+ntorso: LDR R1, =line_4to5     //Salto aca para NO imprimir el torso
         BL print
         LDR R1, =line_4to5
         BL print
 
-nolegs: LDR R1, =line_6_nolegs      //Salto aqui para NO imprimir el las piernas
+nolegs: LDR R1, =line_6_nolegs      //Salto aca para NO imprimir el las piernas
         BL print
 endpr:  LDR R1, =line_7    //Salto para acà para imprimir las ultimas 2 lineas (son iguales independientemente de cuántas vidas tenga el jugador)
-        BL print
-        LDR R1, =line_8
         BL print
         POP {LR}     //restauro el registro link y vuelvo a main
         BX LR
@@ -108,7 +113,7 @@ try_again:       //Solicita al usuario que vuelva a intentarlo
 
         MOV R2, #0        //Configura los parámetros de llamada al sistema para obtener la entrada de caracteres
         LDR R1, =char
-        BL restore_data  //Poner a cero la etiqueta de caracteres antes de realizar la llamada al sistema de lectura
+        BL restore_data  //Se Pone a cero la etiqueta de caracteres antes de realizar la llamada al sistema de lectura
 
         LDR R1, =char
         MOV R0, #0
@@ -336,9 +341,7 @@ title_text:     .asciz "Realizado para la materia Organizacion del Computador"
 title:          .asciz "Bienvenidos al juego del ahorcado"
 prompt:         .asciz "Ingrese el siguiente caracter de la A-Z o 0 (cero) para salir: "
 
-seperator:      .asciz "\n  ____________________"
-top_part1:      .asciz "\n  |________          |"
-top_part2:      .asciz "\n  |________|         |"
+top_part2:      .asciz "\n  +-----------+"
 line_1:         .asciz "\n  |        |         |   Palabra: "
 line_2:         .asciz "\n  |        |         |"
 line_3:         .asciz "\n  |                  |   Errores: "
@@ -350,8 +353,7 @@ line_4_2arms:   .asciz "\n  |       \\|/        |"
 line_6_1leg:    .asciz "\n  |    __ /   __     |"
 line_6_2legs:   .asciz "\n  |    __ / \\ __    |"
 line_6_nolegs:  .asciz "\n  |    __     __     |"
-line_7:         .asciz "\n  |    |       |     |"
-line_8:         .asciz "\n  |____|_______|_____|\n"
+line_7:         .asciz "\n  +------------------|"
 
 invalid_char:   .asciz "\n  --- Caracter Invalido ---\n\n"
 too_many_chars: .asciz "\n  --- Se introdujeron muchos caracteres ---\n\n"
@@ -359,9 +361,10 @@ repeat_char:    .asciz "\n  --- Ya elegiste este caracter ---\n\n"
 file_missing:
 lose_msg:       .asciz "\n  #### PERDISTE! - Se acabaron tus vidas ####\n\n La palabra era: "
 win_msg:        .asciz "--------------\n  << GANASTE! FELICITACIONES! >>\n ---------------\n\n  The word was: "
-try_again_msg:  .asciz "Quiere intentar otra vez? (Y/N): "
-exit_msg:       .asciz "Gracias por jugar!\n"
-quit_msg:       .asciz "salida...\n"
+try_again_msg:  .asciz " Quiere intentar otra vez? (Y/N): "
+exit_msg:       .asciz " Gracias por jugar!\n"
+quit_msg:       .asciz " salida...\n"
+question:       .asciz " Para ganar una vida responda la siguiente pregunta: Entre 100 y 200 ¿Cuantos metros tiene la pirámide de Guiza?: "
 newline:        .asciz "\n"
 
 .bss
