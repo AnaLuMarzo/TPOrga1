@@ -7,6 +7,52 @@
 // Si el carácter introducido coincide con un carácter dentro de la palabra, el registro R6 se establece en 0 (originalmente establecido en 1). Una vez que se alcanza el final de la palabra, R6 se compara con 1 (lo que indica que no hay coincidencia) y, si es verdadero, el carácter introducido se coloca en la etiqueta incorrecta.
 //R6 se agrega a R4, lo que significa que si no hay coincidencia, R6 = 1, R4 se incrementa en 1 (el número de errores aumentó), de lo contrario R4 sigue siendo el mismo.
 
+//-----------DATOS-----------
+.data
+.balign 2
+
+filename_word:  .asciz "words.txt"
+filename_word_len       = .-filename_word
+title_text:     .asciz "Realizado para la materia Organizacion del Computador"
+title:          .asciz "Bienvenidos al juego del ahorcado"
+prompt:         .asciz "Ingrese el siguiente caracter de la A-Z o 0 (cero) para salir: "
+
+top_part2:      .asciz "\n  +-----------+"
+line_1:         .asciz "\n  |        |         |   Palabra: "
+line_2:         .asciz "\n  |        |         |"
+line_3:         .asciz "\n  |                  |   Errores: "
+line_3changed:  .asciz "\n  |        O         |   Errores: "
+line_4to5:      .asciz "\n  |                  |"
+line_4to5_dead: .asciz "\n  |        |         |"
+line_4_1arm:    .asciz "\n  |       \\|         |"
+line_4_2arms:   .asciz "\n  |       \\|/        |"
+line_6_1leg:    .asciz "\n  |    __ /   __     |"
+line_6_2legs:   .asciz "\n  |    __ / \\ __    |"
+line_6_nolegs:  .asciz "\n  |    __     __     |"
+line_7:         .asciz "\n  +------------------|"
+
+invalid_char:   .asciz "\n  --- Caracter Invalido ---\n\n"
+too_many_chars: .asciz "\n  --- Se introdujeron muchos caracteres ---\n\n"
+repeat_char:    .asciz "\n  --- Ya elegiste este caracter ---\n\n"
+file_missing:
+lose_msg:       .asciz "\n  #### PERDISTE! - Se acabaron tus vidas ####\n\n La palabra era: "
+win_msg:        .asciz "--------------\n  << GANASTE! FELICITACIONES! >>\n ---------------\n\n  The word was: "
+try_again_msg:  .asciz " Quiere intentar otra vez? (Y/N): "
+exit_msg:       .asciz " Gracias por jugar!\n"
+quit_msg:       .asciz " salida...\n"
+question:       .asciz " Para ganar una vida responda la siguiente pregunta: Entre 1 y 9 ¿Cuantos años luz de distancoa nos separa de la galaxia Andromeda?: "
+newline:        .asciz "\n"
+
+.bss
+.balign 2
+char:           .space 22               //Retiene la entrada del usuario
+word:           .space 20               //Contiene palabras elegidas al azar
+hidden_word:    .space 20               //contiene guiones bajos y caracteres adivinados de la palabra
+wrong:          .space 8                //Retiene los caracteres adivinados incorrectamente
+used:           .space 28               //Contiene todos los caracteres usados
+buff:           .space 300              //Guarda el contenido del archivo words.txt
+answer          .space 22               //Retiene la respuesta del usuario
+
 //-----------FUNCIONES-----------
 
 reset_round:           // Se usa para imprimir el mensaje y reanudar la ronda.
@@ -59,21 +105,33 @@ dead:           //Se va a imprimir los dibujos del ahorcado
         BL print
         CMP R4, #5
         BLT nolegs               // SI < 5 errores, (4 errores) cambia R1 a una lineapara imprimir línea regular y pasar a impresión normal (sin piernas)
-        LDREQ R1, =line_6_1leg    // SI = 5 errores, cambia R1 para imprimir una pierna
-        BL another_oport        //Sería la 2DA PARTE DEL JUEGO, darle la oportunidad de ganar una vida
-        
+        LDREQ R1, =line_6_1leg    // SI = 5 errores, cambia R1 para imprimir una pierna    
+        BGT another_oport   //Sería la 2DA PARTE DEL JUEGO, darle la oportunidad SI TIENE MAS DE 5 ERRORES salta a another_opor
         LDRGT R1, =line_6_2legs    // SI > 5 errores, (6 errores) cambia R1 para imprimir 2 piernas
         BL print
         B endpr
-
-another_oport: //para imprimir la pregunta y proponer al jugador que lo intente otra vez (pega el salto en try_again)
+        
+//-->comienzo 2 da parte
+another_oport:        //para imprimir la pregunta y proponer al jugador que lo intente otra vez (pega el salto en try_again)
         LDR R1, =question
         BL print
-
-        LDR R1, =newline
-        BL print
-        B try_again
+        MOV R2,#0        //config los parametros de llamada al sistema para obtener los caracteres
+        LDR R1, =answer      //respuesta dada por el jugador
+        LDRB R2, [R1]   //Se carga el primer caracter
+        LDRB R3, [R1, #1]!     //se carga el segundo
+        TEQ R3, #0xA   //salto de línea (si aprieta enter), de nuevo si la entrada tiene el tamaño correcto
+        BEQ char_int   //salto a camnio de Caracter a numero int 
         
+char_int:
+        CMP R2,#0x30   //compara si es una letra 
+        SUBGE R2,#48    //Le resta para llegar al numero decimal
+        CMP R2, #2   //compara el valor ingresao con la respuesta
+        BEQ print
+        LDRGT R1, =line_6_2legs    // SI > 5 errores, (6 errores) cambia R1 para imprimir 2 piernas
+        BL print
+        B endpr
+    //-->fin 2da parte
+    
 normalprint:                   //salto para Imprimir sin el ahorcado
         LDR R1, =line_3
         BL print
@@ -202,7 +260,7 @@ end:                     //sale del programa
         MOV R7, #1
         SVC 0
 
-//-----------------PROGRAMA PRINCIPAL
+//-----PROGRAMA PRINCIPAL
 .global main
 main:               
         LDR R1, =title     //imprime los mensajes del programa
@@ -252,12 +310,12 @@ selectword:   //Esto hace un bucle hasta que R1 apunte al primer carácter de la
         ADD R1, R1, #1
         B selectword
 
-saveword:         //R1 =buff, R2 es el caracter buff, R3 =word, R4 =hidden_word, R5='_', This will save the randomly selected word into memory
+saveword:         //R1 =buff, R2 es el caracter buff, R3 =word, R4 =hidden_word, R5='_', Esto guardará la palabra seleccionada al azar en la memoria
         LDRB R2, [R1]
         TEQ R2, #10              //chequea si el caracter es un salto de linea: \n
         MOVEQ R4, #0             // setea R4 (numero de errores) a 0
         BEQ next_round          // comienza el juego
-        TEQ R2, #0            //Check if char is \0
+        TEQ R2, #0            //Se fija si el caracrer es 0
         MOVEQ R4, #0
         BEQ next_round        //comienza el juego
 
@@ -275,7 +333,7 @@ next_round:      //empieza  la siguiente ronda
         BL print_ASCII_art        //Imprime ASCII ahorcado
         LDR R1, =prompt           //imprime prompt cartel para seguir ingresando una cadena
         BL print
-        BL promptchar          //Prompt user for a character input
+        BL promptchar          //Solicita al usuario una entrada de caracteres
 
         PUSH {R5-R7}
         PUSH {R4}           //R4 aparecerá antes de los registros restantes
@@ -331,48 +389,5 @@ checkword:   //Se le pone de valor 1 a R7 cada vez se encuentra un simbolo '_' e
         BL print
         B try_again                //Salta a try_again (realizado para empezar otra vez)
 
-.data
 
-.balign 2
-
-filename_word:  .asciz "words.txt"
-filename_word_len       = .-filename_word
-title_text:     .asciz "Realizado para la materia Organizacion del Computador"
-title:          .asciz "Bienvenidos al juego del ahorcado"
-prompt:         .asciz "Ingrese el siguiente caracter de la A-Z o 0 (cero) para salir: "
-
-top_part2:      .asciz "\n  +-----------+"
-line_1:         .asciz "\n  |        |         |   Palabra: "
-line_2:         .asciz "\n  |        |         |"
-line_3:         .asciz "\n  |                  |   Errores: "
-line_3changed:  .asciz "\n  |        O         |   Errores: "
-line_4to5:      .asciz "\n  |                  |"
-line_4to5_dead: .asciz "\n  |        |         |"
-line_4_1arm:    .asciz "\n  |       \\|         |"
-line_4_2arms:   .asciz "\n  |       \\|/        |"
-line_6_1leg:    .asciz "\n  |    __ /   __     |"
-line_6_2legs:   .asciz "\n  |    __ / \\ __    |"
-line_6_nolegs:  .asciz "\n  |    __     __     |"
-line_7:         .asciz "\n  +------------------|"
-
-invalid_char:   .asciz "\n  --- Caracter Invalido ---\n\n"
-too_many_chars: .asciz "\n  --- Se introdujeron muchos caracteres ---\n\n"
-repeat_char:    .asciz "\n  --- Ya elegiste este caracter ---\n\n"
-file_missing:
-lose_msg:       .asciz "\n  #### PERDISTE! - Se acabaron tus vidas ####\n\n La palabra era: "
-win_msg:        .asciz "--------------\n  << GANASTE! FELICITACIONES! >>\n ---------------\n\n  The word was: "
-try_again_msg:  .asciz " Quiere intentar otra vez? (Y/N): "
-exit_msg:       .asciz " Gracias por jugar!\n"
-quit_msg:       .asciz " salida...\n"
-question:       .asciz " Para ganar una vida responda la siguiente pregunta: Entre 100 y 200 ¿Cuantos metros tiene la pirámide de Guiza?: "
-newline:        .asciz "\n"
-
-.bss
-.balign 2
-char:           .space 22               //Retiene la entrada del usuario
-word:           .space 20               //Contiene palabras elegidas al azar
-hidden_word:    .space 20               //contiene guiones bajos y caracteres adivinados de la palabra
-wrong:          .space 8                //Retiene los caracteres adivinados incorrectamente
-used:           .space 28               //Contiene todos los caracteres usados
-buff:           .space 300              //Guarda el contenido del archivo words.txt
 .end
